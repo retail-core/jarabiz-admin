@@ -3,11 +3,11 @@ import { MasterDetailLayout } from "@/components/layout/MasterDetailLayout";
 import { useBrands } from "@/hooks/useBrands";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, ChevronLeft, Trash2, Save, Tags, Image as ImageIcon } from "lucide-react";
+import { Plus, Search, ChevronLeft, Trash2, Tags, } from "lucide-react";
 import { toast } from "sonner";
 
 export default function BrandsPage() {
-  const { data: brands, createMutation, isLoading, updateMutation, deleteMutation, isError } = useBrands();
+  const { data: brands, createMutation, isLoading, updateMutation, isError } = useBrands();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [brandName, setBrandName] = useState("");
   const [brandSymbol, setBrandSymbol] = useState("");

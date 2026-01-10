@@ -7,7 +7,7 @@ import { MasterDetailLayout } from "@/components/layout/MasterDetailLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SearchableSelect } from "@/components/ui/searchable-select";
-import { Upload, Save, Barcode, ShieldCheck, Trash2, Search, Plus } from "lucide-react";
+import { Upload,  Search, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ProductsPage() {

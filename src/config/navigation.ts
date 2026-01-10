@@ -2,10 +2,7 @@ import {
   LayoutDashboard, 
   ShoppingBag, 
   Layers, 
-  Boxes, 
-  Factory, 
-  Ruler 
-} from "lucide-react";
+  Boxes} from "lucide-react";
 
 export const DASHBOARD_NAV = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
