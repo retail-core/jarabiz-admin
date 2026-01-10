@@ -17,10 +17,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-[#F9FAFB]">
       {/* Sidebar Overlay for Mobile */}
-      {!isSidebarOpen && (
+      {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/20 z-20 md:hidden"
-          onClick={() => setSidebarOpen(true)}
+          className="fixed inset-0 bg-black/20 z-20 m:hidden"
+          onClick={() => setSidebarOpen(!isSidebarOpen)}
         />
       )}
 
@@ -43,7 +43,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   {item.children ? (
                     <>
                       <button
-                        onClick={() => toggleMenu(item.name)}
+                        onClick={() => { setSidebarOpen(false); toggleMenu(item.name); }}
                         className="w-full flex items-center justify-between p-2 text-gray-600 hover:bg-gray-50 rounded-lg group transition-colors"
                       >
                         <div className="flex items-center gap-3">

@@ -13,6 +13,7 @@ export default function BrandsPage() {
   const [brandSymbol, setBrandSymbol] = useState("");
 
   const selectedBrand = brands?.find(b => b.id === selectedId);
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     if (selectedBrand) {
@@ -61,13 +62,13 @@ export default function BrandsPage() {
           <h1 className="text-2xl font-bold tracking-tight">Brands</h1>
           <p className="text-sm text-gray-500">Manage product brands and their identities.</p>
         </div>
-        <Button onClick={() => setSelectedId(null)} className="gap-2 bg-blue-600">
+        <Button onClick={() => {setSelectedId(null); setIsCreating(true);}} className="gap-2 bg-blue-600">
           <Plus size={18} /> <span>New Brand</span>
         </Button>
       </div>
 
       <MasterDetailLayout
-        showDetails={!!selectedId}
+        showDetails={!!selectedId || isCreating}
         list={
           <div className="flex flex-col h-full">
             <div className="p-4 border-b border-gray-100 bg-white sticky top-0 z-10">
@@ -101,7 +102,7 @@ export default function BrandsPage() {
         }
         details={
           <div className="max-w-2xl mx-auto space-y-8">
-            <Button variant="ghost" onClick={() => setSelectedId(null)} className="md:hidden -ml-2 mb-4 text-blue-600">
+            <Button variant="ghost" onClick={() => {setSelectedId(null); setIsCreating(false);}} className="md:hidden -ml-2 mb-4 text-blue-600">
               <ChevronLeft size={20} /> Back to List
             </Button>
 

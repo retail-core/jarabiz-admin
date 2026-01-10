@@ -15,6 +15,7 @@ export default function CategoriesPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState("");
   const selectedCategory = categories?.find(c => c.id === selectedId);
+  const [isCreating, setIsCreating] = useState(false); // [!code ++]
 
   useEffect(() => {
     if (selectedCategory) {
@@ -74,13 +75,16 @@ export default function CategoriesPage() {
           <h1 className="text-2xl font-bold tracking-tight">Categories</h1>
           <p className="text-sm text-gray-500">Organize your inventory into logical groups.</p>
         </div>
-        <Button onClick={() => setSelectedId(null)} className="gap-2 bg-blue-600 hover:bg-blue-700">
+        <Button onClick={() => {
+          setSelectedId(null);
+          setIsCreating(true);
+        }} className="gap-2 bg-blue-600 hover:bg-blue-700">
           <Plus size={18} /> <span className="hidden sm:inline">New Category</span>
         </Button>
       </div>
 
       <MasterDetailLayout
-        showDetails={!!selectedId}
+        showDetails={!!selectedId || isCreating} // [!code ++]
         list={
           <div className="flex flex-col h-full">
             <div className="p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
@@ -113,10 +117,9 @@ export default function CategoriesPage() {
         }
         details={
           <div className="max-w-2xl mx-auto space-y-8">
-            {/* Mobile Navigation */}
             <Button
               variant="ghost"
-              onClick={() => setSelectedId(null)}
+              onClick={() => {setSelectedId(null); setIsCreating(false);}} // [!code ++]
               className="md:hidden -ml-2 mb-4 text-blue-600 flex gap-2 items-center"
             >
               <ChevronLeft size={20} /> Back to List

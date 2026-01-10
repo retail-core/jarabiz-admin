@@ -7,7 +7,7 @@ import { MasterDetailLayout } from "@/components/layout/MasterDetailLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SearchableSelect } from "@/components/ui/searchable-select";
-import { Upload,  Search, Plus } from "lucide-react";
+import { Upload, Search, Plus, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ProductsPage() {
@@ -16,6 +16,7 @@ export default function ProductsPage() {
   const { data: brands } = useBrands();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   // Form State
   const [name, setName] = useState("");
@@ -122,14 +123,17 @@ export default function ProductsPage() {
           <h1 className="text-2xl font-bold tracking-tight">Products</h1>
           <p className="text-sm text-gray-500">Manage your product effectively.</p>
         </div>
-        <Button onClick={() => setSelectedId(null)} className="gap-2 bg-blue-600 hover:bg-blue-700">
+        <Button onClick={() => {
+          setSelectedId(null)
+          setIsCreating(true);
+        }} className="gap-2 bg-blue-600 hover:bg-blue-700">
           <Plus size={18} /> <span className="hidden sm:inline">New Product</span>
         </Button>
       </div>
 
 
       <MasterDetailLayout
-        showDetails={!!selectedId || name !== ""}
+        showDetails={!!selectedId || isCreating}
         list={
           <div className="flex flex-col h-full">
             <div className="p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
@@ -153,7 +157,15 @@ export default function ProductsPage() {
           </div>
         }
         details={
-          <div className="max-w-2xl space-y-6">
+          <div className="max-w-2xl mx-auto space-y-6">
+             <Button
+              variant="ghost"
+              onClick={() => {setSelectedId(null); setIsCreating(false);}} // [!code ++]
+              className="md:hidden -ml-2 mb-4 text-blue-600 flex gap-2 items-center"
+            >
+              <ChevronLeft size={20} /> Back to List
+            </Button>
+
             <h2 className="text-xl font-bold">{selectedId ? `Edit ${selectedProduct?.name}` : "New Product"}</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
