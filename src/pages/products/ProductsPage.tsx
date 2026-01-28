@@ -28,6 +28,17 @@ export default function ProductsPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Place this right after your hooks and before the 'return'
+  const filteredProducts = products?.filter((product) => {
+    const matchesName = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesBarcode = product.barcode.includes(searchQuery);
+    const matchesCategory = product.category.some(cat => cat.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    return matchesName || matchesBarcode || matchesCategory;
+  });
+
 
   const selectedProduct = products?.find(p => p.id === selectedId);
 
@@ -139,12 +150,12 @@ export default function ProductsPage() {
             <div className="p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                <Input placeholder="Search categories..." className="pl-9 bg-gray-50 border-none h-10 focus-visible:ring-1" />
+                <Input onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search categories..." className="pl-9 bg-gray-50 border-none h-10 focus-visible:ring-1" />
               </div>
             </div>
 
             <div className="divide-y divide-gray-50">
-              {products?.map(p => (
+              {filteredProducts?.map(p => (
                 <button key={p.id} onClick={() => setSelectedId(p.id)} className={`w-full p-4 flex items-center gap-3 ${selectedId === p.id && 'bg-blue-50 border-r-4 border-blue-600'}`}>
                   <img src={p.image_url} className="w-10 h-10 object-contain rounded border" />
                   <div className="text-left">
@@ -158,9 +169,9 @@ export default function ProductsPage() {
         }
         details={
           <div className="max-w-2xl mx-auto space-y-6">
-             <Button
+            <Button
               variant="ghost"
-              onClick={() => {setSelectedId(null); setIsCreating(false);}} // [!code ++]
+              onClick={() => { setSelectedId(null); setIsCreating(false); }} // [!code ++]
               className="md:hidden -ml-2 mb-4 text-blue-600 flex gap-2 items-center"
             >
               <ChevronLeft size={20} /> Back to List

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [openMenus, setOpenMenus] = useState<string[]>(['Products']);
 
   const toggleMenu = (name: string) => {
@@ -14,12 +14,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const handleLinkClick = () => {
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-[#F9FAFB]">
       {/* Sidebar Overlay for Mobile */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/20 z-20 m:hidden"
+          className="fixed inset-0 bg-black/20 z-20 md:hidden"
           onClick={() => setSidebarOpen(!isSidebarOpen)}
         />
       )}
@@ -43,7 +49,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   {item.children ? (
                     <>
                       <button
-                        onClick={() => { setSidebarOpen(false); toggleMenu(item.name); }}
+                        onClick={() => { handleLinkClick(); toggleMenu(item.name); }}
                         className="w-full flex items-center justify-between p-2 text-gray-600 hover:bg-gray-50 rounded-lg group transition-colors"
                       >
                         <div className="flex items-center gap-3">
@@ -61,6 +67,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                               <Link
                                 key={sub.name}
                                 to={sub.href} // Use 'to' instead of 'href'
+                                onClick={handleLinkClick}
                                 className={cn(
                                   "block p-2 text-sm rounded-md transition-colors",
                                   isActive
@@ -77,6 +84,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     </>
                   ) : (
                     <Link
+                    onClick={handleLinkClick}
                       to={item.href}
                       className={cn(
                         "flex items-center gap-3 p-2 rounded-lg group transition-colors",

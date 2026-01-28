@@ -13,13 +13,15 @@ export interface Product {
   nafdac_regno: string | null;
 }
 
-export function useProducts() {
+export function useProducts(search?: string) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['products'],
-    queryFn: async () => {
-      const { data } = await api.get('/product/v1/products');
+    queryKey: ['products', search],
+    queryFn: async ({ queryKey }) => {
+      const [_key, search] = queryKey;
+      const endpoint = search ? `/product/v1/products?search=${search}` : '/product/v1/products';
+      const { data } = await api.get(endpoint);
       return data.items as Product[];
     },
   });
