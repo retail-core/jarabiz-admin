@@ -36,6 +36,8 @@
 
   --border-width: 1px;
   color-scheme: light;
+
+  --scrim: rgb(0 0 0 / 0.45);
 }
 
 /* ---------- Dark palette ---------- */
@@ -69,6 +71,7 @@
   --elev-nav: 0 -1px 0 var(--line), 0 -8px 24px rgb(0 0 0 / 0.4);
 
   color-scheme: dark;
+  --scrim: rgb(0 0 0 / 0.65);
 }
 
 /* ---------- Color tokens -> Tailwind utilities (shadcn names) ---------- */
@@ -121,6 +124,7 @@
   --shadow-card: var(--elev-card);
   --shadow-pop: var(--elev-pop);
   --shadow-nav: var(--elev-nav);
+  --color-scrim: var(--scrim);
 }
 
 /* ---------- Static tokens ---------- */
@@ -157,6 +161,11 @@
   --spacing-savebar: 4.5rem;
   --spacing-sidebar: 15rem;
   --spacing-sidebar-collapsed: 4.5rem;
+
+  --spacing-tap: 2.75rem;
+  /* 44px minimum tap target */
+  --text-input: 1rem;
+  --text-input--line-height: 1.5rem;
 }
 
 /* ---------- Utilities ---------- */
@@ -164,12 +173,15 @@
   .border-hairline {
     border-width: var(--border-width);
   }
+
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
+
   .pt-safe {
     padding-top: env(safe-area-inset-top);
   }
+
   .px-safe {
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);

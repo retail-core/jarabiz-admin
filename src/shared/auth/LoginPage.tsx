@@ -7,7 +7,7 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
 import { Logo } from '@/shared/components/layout/Logo'
-import { api, getApiError } from '@/shared/lib/api'
+import { api, getApiError, LOGIN_PATH } from '@/shared/lib/api'
 import { ROLES, type User } from '@/shared/lib/auth'
 import { useAuth } from './auth-context'
 
@@ -41,7 +41,7 @@ export default function LoginPage() {
 
   const mutation = useMutation({
     mutationFn: async (values: Values) => {
-      const { data } = await api.post<LoginResponse>('/auth/login', values)
+      const { data } = await api.post<LoginResponse>(LOGIN_PATH, values)
       if (!(ROLES as readonly string[]).includes(data.user.role)) throw new NoAccessError()
       return data
     },

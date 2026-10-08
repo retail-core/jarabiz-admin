@@ -1,7 +1,7 @@
-import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "@/shared/lib/utils"
-import { Button } from "@/shared/components/ui/button"
+import * as React from 'react'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { cn } from '@/shared/lib/utils'
+import { Button } from '@/shared/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -9,12 +9,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shared/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/components/ui/popover"
+} from '@/shared/components/ui/command'
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover'
 
 interface Option {
   id: string
@@ -26,29 +22,48 @@ interface SearchableSelectProps {
   value: string
   onChange: (value: string) => void
   placeholder: string
+  searchPlaceholder?: string
+  disabled?: boolean
+  className?: string
+  'aria-invalid'?: boolean
 }
 
-export function SearchableSelect({ options, value, onChange, placeholder }: SearchableSelectProps) {
+export function SearchableSelect({
+  options,
+  value,
+  onChange,
+  placeholder,
+  searchPlaceholder = 'Search…',
+  disabled,
+  className,
+  'aria-invalid': invalid,
+}: SearchableSelectProps) {
   const [open, setOpen] = React.useState(false)
+  const selected = options?.find((opt) => opt.id === value)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          type="button"
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-11 bg-white"
+          aria-invalid={invalid}
+          disabled={disabled}
+          className={cn(
+            'w-full justify-between rounded-input px-4 font-normal aria-invalid:border-destructive',
+            !selected && 'text-muted-foreground',
+            className,
+          )}
         >
-          {value
-            ? options?.find((opt) => opt.id === value)?.name
-            : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <span className="truncate">{selected?.name ?? placeholder}</span>
+          <ChevronsUpDown className="size-4 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+      <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command>
-          <CommandInput placeholder={`Search...`} />
+          <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
@@ -57,15 +72,12 @@ export function SearchableSelect({ options, value, onChange, placeholder }: Sear
                   key={opt.id}
                   value={opt.name}
                   onSelect={() => {
-                    onChange(opt.id) // Sends the UUID to the parent
+                    onChange(opt.id)
                     setOpen(false)
                   }}
                 >
                   <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === opt.id ? "opacity-100" : "opacity-0"
-                    )}
+                    className={cn('size-4 text-primary', value === opt.id ? 'opacity-100' : 'opacity-0')}
                   />
                   {opt.name}
                 </CommandItem>

@@ -5,6 +5,8 @@ export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "https://api.jarabiz.com/api",
 });
 
+export const LOGIN_PATH = '/auth/v1/login'
+
 api.interceptors.request.use((config) => {
   const token = authStorage.getToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -14,7 +16,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    const isLoginRequest = error.config?.url?.includes("/auth/login");
+    const isLoginRequest = error.config?.url?.includes(LOGIN_PATH)
     if (error.response?.status === 401 && !isLoginRequest) {
       authStorage.logout();
     }
