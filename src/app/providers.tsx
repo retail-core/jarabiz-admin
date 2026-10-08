@@ -5,6 +5,7 @@ import { ThemeProvider } from 'next-themes'
 import { AuthProvider } from '@/shared/auth/AuthProvider'
 import { Toaster } from '@/shared/components/ui/sonner'
 import { AUTH_LOGOUT_EVENT } from '@/shared/lib/auth'
+import { UpdatePrompt } from '@/shared/components/layout/UpdatePrompt'
 
 const createQueryClient = () =>
   new QueryClient({
@@ -36,6 +37,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           {children}
+          <UpdatePrompt />
           <Toaster position="top-center" />
         </AuthProvider>
       </QueryClientProvider>
