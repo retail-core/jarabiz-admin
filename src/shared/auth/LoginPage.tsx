@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { api } from '@/lib/api';
-import { authStorage } from '@/lib/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { api } from '@/shared/lib/api';
+import { authStorage } from '@/shared/lib/auth';
+import { Button } from '@/shared/components/ui/button';
+import { Input } from '@/shared/components/ui/input';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);

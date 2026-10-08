@@ -1,12 +1,12 @@
 // src/pages/products/ProductsPage.tsx
 import { useState, useEffect } from "react";
-import { useProducts } from "@/hooks/useProducts";
-import { useCategories } from "@/hooks/useCategories";
-import { useBrands } from "@/hooks/useBrands";
-import { MasterDetailLayout } from "@/components/layout/MasterDetailLayout";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { SearchableSelect } from "@/components/ui/searchable-select";
+import { useProducts } from "@/features/catalog/hooks/useProducts";
+import { useCategories } from "@/features/catalog/hooks/useCategories";
+import { useBrands } from "@/features/catalog/hooks/useBrands";
+import { MasterDetailLayout } from "@/shared/components/layout/MasterDetailLayout";
+import { Input } from "@/shared/components/ui/input";
+import { Button } from "@/shared/components/ui/button";
+import { SearchableSelect } from "@/shared/components/ui/searchable-select";
 import { Upload, Search, Plus, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 

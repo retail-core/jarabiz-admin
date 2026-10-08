@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { MasterDetailLayout } from "@/components/layout/MasterDetailLayout";
-import { useBrands } from "@/hooks/useBrands";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { MasterDetailLayout } from "@/shared/components/layout/MasterDetailLayout";
+import { useBrands } from "@/features/catalog/hooks/useBrands";
+import { Input } from "@/shared/components/ui/input";
+import { Button } from "@/shared/components/ui/button";
 import { Plus, Search, ChevronLeft, Trash2, Tags, } from "lucide-react";
 import { toast } from "sonner";
 

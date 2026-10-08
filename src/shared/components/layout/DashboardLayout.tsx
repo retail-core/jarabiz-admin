@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Menu, ChevronDown, User } from 'lucide-react';
-import { DASHBOARD_NAV } from '@/config/navigation';
-import { cn } from '@/lib/utils';
+import { DASHBOARD_NAV } from '@/shared/config/navigation';
+import { cn } from '@/shared/lib/utils';
 import { Link, useLocation } from 'react-router';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {

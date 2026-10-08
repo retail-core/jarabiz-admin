@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import CategoriesPage from "@/pages/products/CategoriesPage";
-import LoginPage from "@/pages/LoginPage";
-import { authStorage } from "@/lib/auth";
-import BrandsPage from './pages/products/BrandsPage';
-import ProductsPage from './pages/products/ProductsPage';
+import { DashboardLayout } from "@/shared/components/layout/DashboardLayout";
+import CategoriesPage from "@/features/catalog/pages/CategoriesPage";
+import LoginPage from "@/shared/auth/LoginPage";
+import { authStorage } from "@/shared/lib/auth";
+import BrandsPage from '@/features/catalog/pages/BrandsPage';
+import ProductsPage from '@/features/catalog/pages/ProductsPage';
 
 
 function App() {

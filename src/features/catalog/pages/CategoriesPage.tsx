@@ -1,10 +1,10 @@
 // src/pages/products/CategoriesPage.tsx
 import { useState, useEffect } from "react";
-import { MasterDetailLayout } from "@/components/layout/MasterDetailLayout";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { MasterDetailLayout } from "@/shared/components/layout/MasterDetailLayout";
+import { Input } from "@/shared/components/ui/input";
+import { Button } from "@/shared/components/ui/button";
 import { Plus, Search, ChevronLeft, Trash2 } from "lucide-react";
-import { useCategories } from "@/hooks/useCategories";
+import { useCategories } from "@/features/catalog/hooks/useCategories";
 import { toast } from "sonner";
 
 
