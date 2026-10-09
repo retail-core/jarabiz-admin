@@ -133,7 +133,7 @@
     "Helvetica Neue", Arial, sans-serif;
 
   /* Radii: rounded-card / rounded-input / rounded-button */
-  --radius-card: 1rem;
+  --radius-card: 1.8rem;
   --radius-input: 0.75rem;
   --radius-button: 0.75rem;
   --radius-chip: 9999px;

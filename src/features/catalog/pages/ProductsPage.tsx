@@ -1,270 +1,199 @@
-// src/pages/products/ProductsPage.tsx
-import { useState, useEffect } from "react";
-import { useProducts } from "@/features/catalog/hooks/useProducts";
-import { useCategories } from "@/features/catalog/hooks/useCategories";
-import { useBrands } from "@/features/catalog/hooks/useBrands";
-import { MasterDetailLayout } from "@/shared/components/layout/MasterDetailLayout";
-import { Input } from "@/shared/components/ui/input";
-import { Button } from "@/shared/components/ui/button";
-import { SearchableSelect } from "@/shared/components/ui/searchable-select";
-import { Upload, Search, Plus, ChevronLeft } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { PackageSearch, Plus, Search, X } from 'lucide-react'
+import { Button } from '@/shared/components/ui/button'
+import { Input } from '@/shared/components/ui/input'
+import { PaginationBar } from '@/shared/components/ui/pagination-bar'
+import { useDebouncedValue } from '@/shared/lib/use-debounced-value'
+import { ProductCard } from '../components/ProductCard'
+import { ProductTable } from '../components/ProductTable'
+import { useProducts } from '../hooks/useProducts'
+
+const PAGE_SIZE = 20
+
+function ListSkeleton() {
+  return (
+    <div aria-hidden className="flex flex-col gap-stack">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="flex animate-pulse items-center gap-3 rounded-card border bg-card p-3">
+          <div className="size-16 rounded-button bg-muted" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-3/4 rounded-chip bg-muted" />
+            <div className="h-3 w-1/3 rounded-chip bg-muted" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function EmptyState({ search, onClear }: { search: string; onClear: () => void }) {
+  return (
+    <div className="grid min-h-[40dvh] place-items-center text-center">
+      <div className="flex flex-col items-center gap-3">
+        <PackageSearch className="size-10 text-muted-foreground" />
+        <div>
+          <h2 className="text-title font-semibold">
+            {search ? 'No matching products' : 'No products yet'}
+          </h2>
+          <p className="text-body text-muted-foreground">
+            {search ? `Nothing found for “${search}”.` : 'Add your first product to get started.'}
+          </p>
+        </div>
+        {search ? (
+          <Button variant="outline" onClick={onClear}>
+            Clear search
+          </Button>
+        ) : (
+          <Button asChild>
+            <Link to="/products/new">
+              <Plus />
+              Add product
+            </Link>
+          </Button>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default function ProductsPage() {
-  const { data: products, createMutation, updateMutation, isLoading } = useProducts();
-  const { data: categories } = useCategories();
-  const { data: brands } = useBrands();
+  const [params, setParams] = useSearchParams()
+  const page = Math.max(1, Number(params.get('page')) || 1)
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
+  // Input is local state (no cursor jumps); the URL mirrors it so Back from an edit keeps your place.
+  const [input, setInput] = useState(params.get('q') ?? '')
+  const search = useDebouncedValue(input.trim(), 300)
 
-  // Form State
-  const [name, setName] = useState("");
-  const [barcode, setBarcode] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [brandId, setBrandId] = useState("");
-  const [nafdac, setNafdac] = useState("");
-  const [manufacturer, setManufacturer] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { data, isPending, isError, refetch } = useProducts({
+    search,
+    pageIndex: page - 1,
+    pageSize: PAGE_SIZE,
+  })
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const total = data?.total ?? 0
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
-  // Place this right after your hooks and before the 'return'
-  const filteredProducts = products?.filter((product) => {
-    const matchesName = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesBarcode = product.barcode.includes(searchQuery);
-    const matchesCategory = product.category.some(cat => cat.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    return matchesName || matchesBarcode || matchesCategory;
-  });
-
-
-  const selectedProduct = products?.find(p => p.id === selectedId);
-
-  useEffect(() => {
-    if (!imageFile) {
-      setPreviewUrl(null);
-      return;
-    }
-
-    const objectUrl = URL.createObjectURL(imageFile);
-    setPreviewUrl(objectUrl);
-
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [imageFile]);
-
-  useEffect(() => {
-    if (selectedProduct) {
-      setName(selectedProduct.name);
-      setBarcode(selectedProduct.barcode);
-      setNafdac(selectedProduct.nafdac_regno ?? "");
-      setManufacturer(selectedProduct.manufacturer ?? "");
-      setImageFile(null);
-      setCategoryId(selectedProduct.category[0]?.id || "");
-      setBrandId(selectedProduct.brand.id || "");
-      setPreviewUrl(selectedProduct.image_url)
-      // Note: Setting dropdowns requires finding the ID based on the name if API returns name
-    } else {
-      setName(""); setBarcode(""); setCategoryId(""); setBrandId(""); setNafdac(""); setManufacturer(""); setImageFile(null);
-      setPreviewUrl(null);
-    }
-  }, [selectedId, selectedProduct]);
-
-
-  const displayImage = previewUrl || selectedProduct?.image_url;
-
-  const handleSave = () => {
-    if (!name || !barcode || !categoryId || !brandId || (!selectedId && !imageFile)) {
-      return toast.error("Please fill all required fields and upload an image");
-    }
-
-    const fd = new FormData();
-    fd.append("name", name);
-    fd.append("barcode", barcode);
-    fd.append("category_id", categoryId);
-    fd.append("brand_id", brandId);
-    if (imageFile) fd.append("imageFile", imageFile);
-    if (nafdac) fd.append("nafdac_regno", nafdac);
-    if (manufacturer) fd.append("manufacturer", manufacturer);
-
-    if (selectedId) {
-      updateMutation.mutate({
-        id: selectedId,
-        formData: fd
-      }, {
-        onSuccess: () => {
-          setSelectedId(null);
-          setName("");
-          setBarcode("");
-          setCategoryId("");
-          setBrandId("");
-          setNafdac("");
-          setManufacturer("");
-          setImageFile(null);
-          setPreviewUrl(null)
+  const update = (changes: { q?: string; page?: number }) =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (changes.q !== undefined) {
+          changes.q ? next.set('q', changes.q) : next.delete('q')
+          next.delete('page')
         }
-      });
-      return;
+        if (changes.page !== undefined) {
+          changes.page > 1 ? next.set('page', String(changes.page)) : next.delete('page')
+        }
+        return next
+      },
+      { replace: true },
+    )
+
+  // If the page is past the end (e.g. the list shrank), jump to the last one.
+  useEffect(() => {
+    if (data && page > pageCount) {
+      setParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          pageCount > 1 ? next.set('page', String(pageCount)) : next.delete('page')
+          return next
+        },
+        { replace: true },
+      )
     }
+  }, [data, page, pageCount, setParams])
 
+  const onSearch = (value: string) => {
+    setInput(value)
+    update({ q: value.trim() })
+  }
 
-    createMutation.mutate(fd, {
-      onSuccess: () => {
-        setSelectedId(null);
-        setName("");
-        setBarcode("");
-        setCategoryId("");
-        setBrandId("");
-        setNafdac("");
-        setManufacturer("");
-        setImageFile(null);
-        setPreviewUrl(null);
-      }
-    });
-  };
-
-  if (isLoading) return <div className="p-8 animate-pulse">Loading...</div>;
+  const goToPage = (next: number) => {
+    update({ page: next })
+    window.scrollTo({ top: 0 })
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Page Header - Hidden on mobile when editing to save space */}
-      <div className={selectedId ? "hidden md:flex justify-between items-center" : "flex justify-between items-center"}>
+    <div>
+      <div className="mb-stack flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Products</h1>
-          <p className="text-sm text-gray-500">Manage your product effectively.</p>
+          <h1 className="text-heading font-semibold">Products</h1>
+          {data && (
+            <p className="text-body text-muted-foreground">
+              {search ? `${total} result${total === 1 ? '' : 's'}` : `${total} total`}
+            </p>
+          )}
         </div>
-        <Button onClick={() => {
-          setSelectedId(null)
-          setIsCreating(true);
-        }} className="gap-2 bg-blue-600 hover:bg-blue-700">
-          <Plus size={18} /> <span className="hidden sm:inline">New Product</span>
+        <Button asChild className="hidden md:inline-flex">
+          <Link to="/products/new">
+            <Plus />
+            Add product
+          </Link>
         </Button>
       </div>
 
-
-      <MasterDetailLayout
-        showDetails={!!selectedId || isCreating}
-        list={
-          <div className="flex flex-col h-full">
-            <div className="p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                <Input onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search categories..." className="pl-9 bg-gray-50 border-none h-10 focus-visible:ring-1" />
-              </div>
-            </div>
-
-            <div className="divide-y divide-gray-50">
-              {filteredProducts?.map(p => (
-                <button key={p.id} onClick={() => setSelectedId(p.id)} className={`w-full p-4 flex items-center gap-3 ${selectedId === p.id && 'bg-blue-50 border-r-4 border-blue-600'}`}>
-                  <img src={p.image_url} className="w-10 h-10 object-contain rounded border" />
-                  <div className="text-left">
-                    <p className="text-sm font-bold truncate w-40">{p.name}</p>
-                    <p className="text-[10px] text-gray-400 uppercase">{p.brand.name}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        }
-        details={
-          <div className="max-w-2xl mx-auto space-y-6">
-            <Button
-              variant="ghost"
-              onClick={() => { setSelectedId(null); setIsCreating(false); }} // [!code ++]
-              className="md:hidden -ml-2 mb-4 text-blue-600 flex gap-2 items-center"
+      <div className="sticky top-nav-top z-20 -mx-page bg-background px-page py-2 md:top-0 md:mx-0 md:px-0">
+        <div className="relative">
+          <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            value={input}
+            onChange={(e) => onSearch(e.target.value)}
+            placeholder="Search name, barcode, brand or category"
+            aria-label="Search products"
+            autoComplete="off"
+            className="pr-12 pl-10 [&::-webkit-search-cancel-button]:hidden"
+          />
+          {input && (
+            <button
+              type="button"
+              aria-label="Clear search"
+              onClick={() => onSearch('')}
+              className="absolute inset-y-0 right-0 grid w-12 place-items-center text-muted-foreground hover:text-foreground"
             >
-              <ChevronLeft size={20} /> Back to List
-            </Button>
+              <X className="size-4" />
+            </button>
+          )}
+        </div>
+      </div>
 
-            <h2 className="text-xl font-bold">{selectedId ? `Edit ${selectedProduct?.name}` : "New Product"}</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase">Product Name*</label>
-                <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Coca Cola 50cl" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase">Barcode*</label>
-                <Input value={barcode} onChange={e => setBarcode(e.target.value)} placeholder="0000000000" />
-              </div>
+      <div className="mt-stack">
+        {isPending ? (
+          <ListSkeleton />
+        ) : isError ? (
+          <div className="grid min-h-[40dvh] place-items-center text-center">
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-body text-muted-foreground">Couldn’t load products.</p>
+              <Button variant="outline" onClick={() => refetch()}>
+                Try again
+              </Button>
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase">Category*</label>
-                <SearchableSelect options={categories} value={categoryId} onChange={setCategoryId} placeholder="Select Category" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase">Brand*</label>
-                <SearchableSelect options={brands} value={brandId} onChange={setBrandId} placeholder="Select Brand" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase">NAFDAC No</label>
-                <Input value={nafdac} onChange={e => setNafdac(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase">Manufacturer</label>
-                <Input value={manufacturer} onChange={e => setManufacturer(e.target.value)} />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                Product Image
-              </label>
-
-              <div className="h-32 w-32 relative group overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 transition-all hover:border-blue-400">
-                {/* The actual image display */}
-                <div className="aspect-square flex items-center justify-center p-4">
-                  {displayImage ? (
-                    <img
-                      src={displayImage}
-                      alt="Preview"
-                      className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="text-center">
-                      <Upload className="mx-auto text-gray-300 mb-2" size={32} />
-                      <p className="text-[10px] text-gray-400 font-bold uppercase">No Image Selected</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* The hidden input and overlay */}
-                <label className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-all opacity-0 group-hover:opacity-100">
-                  <div className="bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 scale-90 group-hover:scale-100 transition-transform">
-                    <Upload size={16} className="text-blue-600" />
-                    <span className="text-xs font-bold text-gray-900">Change Image</span>
-                  </div>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) setImageFile(file);
-                    }}
-                  />
-                </label>
-              </div>
-
-              {imageFile && (
-                <p className="text-[10px] text-blue-600 font-bold uppercase mt-2">
-                  Ready to upload: {imageFile.name}
-                </p>
-              )}
-            </div>
-
-            <Button onClick={handleSave} disabled={createMutation.isPending || updateMutation.isPending} className="w-full bg-blue-600 h-12">
-              {createMutation.isPending || updateMutation.isPending ? "Uploading..." : "Save Product"}
-            </Button>
           </div>
-        }
-      />
+        ) : data.items.length === 0 ? (
+          <EmptyState search={search} onClear={() => onSearch('')} />
+        ) : (
+          <>
+            <ul className="flex flex-col gap-stack md:hidden">
+              {data.items.map((p) => (
+                <li key={p.id}>
+                  <ProductCard product={p} />
+                </li>
+              ))}
+            </ul>
+            <div className="hidden md:block">
+              <ProductTable products={data.items} />
+            </div>
+            <PaginationBar
+              page={page}
+              pageCount={pageCount}
+              total={total}
+              pageSize={PAGE_SIZE}
+              onPageChange={goToPage}
+            />
+          </>
+        )}
+      </div>
     </div>
-  );
+  )
 }
