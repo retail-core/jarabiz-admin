@@ -1,12 +1,17 @@
+export interface ProductUnit {
+  id: string
+  label: string
+  qty_per_unit: number
+  barcode: string | null
+  is_base: boolean
+}
+
 export interface Product {
   id: string
   name: string
-  barcode: string
-  brand: { id: string; name: string }
   category: { id: string; name: string }[]
-  manufacturer: string | null
   image_url: string
-  nafdac_regno: string | null
+  units: ProductUnit[]
 }
 
 export interface ProductList {

@@ -1,16 +1,17 @@
-import { ArrowLeft, PackageX } from 'lucide-react'
+import { PackageX } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/shared/components/ui/button'
 import { PageFallback } from '@/shared/components/layout/PageFallback'
 import { ProductForm } from '../components/ProductForm'
 import { getDefaultValues } from '../defaults'
 import { useCreateProduct, useProduct, useUpdateProduct } from '../hooks/useProducts'
+import { CaretLeftIcon } from '@phosphor-icons/react'
 
 const LIST_ROUTE = '/products'
 
 function FormHeader({ title, onBack }: { title: string; onBack: () => void }) {
   return (
-    <header className="mx-auto mb-section flex max-w-2xl items-center gap-2">
+    <header className="mx-auto mb-section flex max-w-2xl items-center gap-2 mt-4">
       <Button
         type="button"
         variant="ghost"
@@ -19,9 +20,9 @@ function FormHeader({ title, onBack }: { title: string; onBack: () => void }) {
         onClick={onBack}
         className="-ml-3"
       >
-        <ArrowLeft />
+        <CaretLeftIcon />
       </Button>
-      <h1 className="truncate text-heading font-semibold">{title}</h1>
+      <h1 className="truncate text-xl font-semibold">{title}</h1>
     </header>
   )
 }

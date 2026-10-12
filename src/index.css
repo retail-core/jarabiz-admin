@@ -1,3 +1,4 @@
+@import "@fontsource-variable/inter";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -129,11 +130,11 @@
 
 /* ---------- Static tokens ---------- */
 @theme {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+  "Helvetica Neue", Arial, sans-serif;
 
   /* Radii: rounded-card / rounded-input / rounded-button */
-  --radius-card: 1.8rem;
+  --radius-card: 1rem;
   --radius-input: 0.75rem;
   --radius-button: 0.75rem;
   --radius-chip: 9999px;
@@ -153,7 +154,7 @@
   --spacing-page-lg: 2rem;
   --spacing-stack: 0.75rem;
   --spacing-section: 1.5rem;
-  --spacing-control: 3rem;
+  --spacing-control: 2.5rem;
   /* input/button height: 48px tap target */
   --spacing-control-sm: 2.25rem;
   --spacing-nav-bottom: 4rem;
@@ -207,6 +208,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  [data-sonner-toaster] {
+  font-family: var(--font-sans);
+}
 
   html {
     -webkit-text-size-adjust: 100%;

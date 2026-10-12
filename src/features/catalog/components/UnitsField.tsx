@@ -4,6 +4,8 @@ import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
 import { cn } from '@/shared/lib/utils'
 import { MAX_UNITS, type ProductFormValues } from '../schema'
+import { Switch } from '@/shared/components/ui/switch'
+import { isOjaBarcode } from '../barcode'
 
 /**
  * UI-only for now: units are validated but not sent to the backend
@@ -18,6 +20,7 @@ export function UnitsField() {
   } = useFormContext<ProductFormValues>()
   const { fields, append, remove } = useFieldArray({ control, name: 'units' })
   const units = useWatch({ control, name: 'units' }) ?? []
+  const hasBarcode = useWatch({ control, name: 'hasBarcode' })
 
   const baseLabel = units.find((u) => u.isBase)?.label?.trim()
   const rootError = errors.units?.root?.message ?? errors.units?.message
@@ -31,14 +34,6 @@ export function UnitsField() {
   return (
     <section aria-labelledby="units-heading" className="flex flex-col gap-stack">
       <div className="flex items-end justify-between gap-3">
-        <div>
-          <h2 id="units-heading" className="text-title font-semibold">
-            Units
-          </h2>
-          <p className="text-body text-muted-foreground">
-            How this product is sold. Mark one unit as the base (quantity 1).
-          </p>
-        </div>
         <span className="shrink-0 text-caption text-muted-foreground">
           {fields.length}/{MAX_UNITS}
         </span>
@@ -62,12 +57,14 @@ export function UnitsField() {
                   aria-checked={isBase}
                   onClick={() => selectBase(i)}
                   className={cn(
-                    'flex h-control-sm items-center gap-2 rounded-chip border px-3 text-body font-medium transition-colors',
+                    'flex h-[1.7rem] items-center gap-2 rounded-chip border px-3 text-caption text-muted-foreground font-medium transition-colors [background-size:15%_15%]',
                     isBase
                       ? 'border-transparent bg-primary-soft text-primary'
                       : 'text-muted-foreground hover:bg-muted',
                   )}
                 >
+
+
                   <span
                     aria-hidden
                     className={cn(
@@ -96,7 +93,7 @@ export function UnitsField() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor={`unit-${i}-label`} className="text-body font-medium">
+                  <label htmlFor={`unit-${i}-label`} className="text-caption text-muted-foreground font-medium">
                     Label
                   </label>
                   <Input
@@ -112,7 +109,7 @@ export function UnitsField() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor={`unit-${i}-qty`} className="text-body font-medium">
+                  <label htmlFor={`unit-${i}-qty`} className="text-caption text-muted-foreground font-medium">
                     Qty per unit
                   </label>
                   <Input
@@ -135,6 +132,50 @@ export function UnitsField() {
                 </div>
               </div>
 
+
+              <div className="mt-4 flex flex-col gap-1.5">
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor={`unit-${i}-barcode`} className="text-caption text-muted-foreground font-medium">
+                    Barcode
+                    {!isBase && <span className="font-normal text-muted-foreground"> (optional)</span>}
+                  </label>
+                  {isBase && (
+                    <label className="flex items-center gap-2 text-caption text-muted-foreground">
+                      Has barcode
+                      <Switch
+                        checked={hasBarcode}
+                        onCheckedChange={(on) => {
+                          setValue('hasBarcode', on, { shouldDirty: true })
+                          if (on && isOjaBarcode(unit?.barcode ?? '')) {
+                            setValue(`units.${i}.barcode`, '', { shouldDirty: true })
+                          }
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {isBase && !hasBarcode ? (
+                  <p className="rounded-input bg-muted px-3.5 py-2.5 text-caption text-muted-foreground">
+                    {isOjaBarcode(unit?.barcode ?? '')
+                      ? `Oja code ${unit?.barcode}`
+                      : 'An Oja barcode is generated when you save. Use this only if this item has no barcode.'}
+                  </p>
+                ) : (
+                  <Input
+                    id={`unit-${i}-barcode`}
+                    placeholder="Scan or type the barcode"
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    aria-invalid={!!rowErrors?.barcode}
+                    {...register(`units.${i}.barcode`)}
+                  />
+                )}
+                {rowErrors?.barcode && (
+                  <p className="text-caption text-destructive">{rowErrors.barcode.message}</p>
+                )}
+              </div>
+
               {showHint && (
                 <p className="mt-2 text-caption text-muted-foreground">
                   1 {unit.label.trim()} = {unit.qtyPerUnit} {baseLabel}
@@ -155,7 +196,7 @@ export function UnitsField() {
         type="button"
         variant="outline"
         disabled={fields.length >= MAX_UNITS}
-        onClick={() => append({ label: '', qtyPerUnit: 2, isBase: false })}
+        onClick={() => append({ label: '', qtyPerUnit: 2, isBase: false, barcode: '' })}
       >
         <Plus />
         Add unit

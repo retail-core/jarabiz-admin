@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { ImagePlus, Loader2, RefreshCw, Undo2, X } from 'lucide-react'
+import { ImagePlus, Loader2, Undo2, X } from 'lucide-react'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { Button } from '@/shared/components/ui/button'
 import { compressToWebp } from '@/shared/lib/image'
 import { cn } from '@/shared/lib/utils'
 import type { ProductFormValues } from '../schema'
+import { ArrowClockwiseIcon, PlusIcon } from '@phosphor-icons/react'
 
 interface ImageFieldProps {
   /** Current image when editing. Kept unless the user picks a new one. */
@@ -72,10 +73,6 @@ export function ImageField({ existingUrl }: ImageFieldProps) {
 
   return (
     <section aria-labelledby="image-heading" className="flex flex-col gap-stack">
-      <h2 id="image-heading" className="text-title font-semibold">
-        Product image
-      </h2>
-
       <div className="flex items-center gap-4">
         <button
           type="button"
@@ -84,12 +81,12 @@ export function ImageField({ existingUrl }: ImageFieldProps) {
           aria-label={src ? 'Change product image' : 'Add product image'}
           aria-invalid={!!error}
           className={cn(
-            'relative grid size-32 shrink-0 place-items-center overflow-hidden rounded-card border border-dashed bg-muted outline-none transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring/40',
+            'relative grid size-32 shrink-0 place-items-center overflow-hidden rounded-2xl border border-dashed bg-muted outline-none transition-colors hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring/40',
             error && 'border-destructive',
           )}
         >
           {src ? (
-            <img src={src} alt="" className="size-full object-contain p-2" />
+            <img src={src} alt="" className="size-full object-contain p-2 rounded-2xl" />
           ) : (
             <ImagePlus className="size-8 text-muted-foreground" />
           )}
@@ -108,7 +105,7 @@ export function ImageField({ existingUrl }: ImageFieldProps) {
             disabled={busy}
             onClick={() => inputRef.current?.click()}
           >
-            {src ? <RefreshCw /> : <ImagePlus />}
+            {src ? <ArrowClockwiseIcon /> : <PlusIcon />}
             {src ? 'Change image' : 'Add image'}
           </Button>
 
@@ -119,7 +116,7 @@ export function ImageField({ existingUrl }: ImageFieldProps) {
             </Button>
           )}
 
-          <p className="text-caption text-muted-foreground">{hint}</p>
+          <p className="text-[11px] text-muted-foreground">{hint}</p>
         </div>
       </div>
 

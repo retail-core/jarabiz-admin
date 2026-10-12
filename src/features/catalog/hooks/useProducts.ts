@@ -22,8 +22,7 @@ const FETCH_ALL_SIZE = 10000
 
 const matches = (p: Product, term: string) =>
   p.name.toLowerCase().includes(term) ||
-  p.barcode.toLowerCase().includes(term) ||
-  p.brand.name.toLowerCase().includes(term) ||
+  p.units.some((u) => u.barcode?.toLowerCase().includes(term)) ||
   p.category.some((c) => c.name.toLowerCase().includes(term))
 
 function useCatalog() {
@@ -67,20 +66,24 @@ export function useProduct(id: string | undefined) {
   return { ...query, data: product }
 }
 
-/**
- * Maps form values to the backend's multipart contract.
- * NOTE: `units` is intentionally NOT sent. The backend doesn't support units yet.
- * When it does, append them here.
- */
+
 function toFormData(values: ProductFormValues): FormData {
   const fd = new FormData()
   fd.append('name', values.name)
-  fd.append('barcode', values.barcode)
   fd.append('category_id', values.categoryId)
-  fd.append('brand_id', values.brandId)
   if (values.image) fd.append('imageFile', values.image)
-  if (values.nafdacRegNo) fd.append('nafdac_regno', values.nafdacRegNo)
-  if (values.manufacturer) fd.append('manufacturer', values.manufacturer)
+  fd.append(
+    'units',
+    JSON.stringify(
+      values.units.map((u) => ({
+        ...(u.unitId ? { id: u.unitId } : {}), // existing units keep their id; new ones have none
+        label: u.label.trim(),
+        qty_per_unit: u.qtyPerUnit,
+        barcode: u.barcode.trim() || null,
+        is_base: u.isBase,
+      })),
+    ),
+  )
   return fd
 }
 

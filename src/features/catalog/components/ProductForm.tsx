@@ -5,7 +5,6 @@ import { Loader2 } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
 import { SearchableSelect } from '@/shared/components/ui/searchable-select'
-import { useBrands } from '../hooks/useBrands'
 import { useCategories } from '../hooks/useCategories'
 import { getProductSchema, type ProductFormValues } from '../schema'
 import { ImageField } from './ImageField'
@@ -35,7 +34,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className="text-body font-medium">
+      <label htmlFor={htmlFor} className="text-muted-foreground font-medium text-caption">
         {label}
         {optional && <span className="font-normal text-muted-foreground"> (optional)</span>}
       </label>
@@ -68,7 +67,7 @@ export function ProductForm({
   } = form
 
   const { data: categories } = useCategories()
-  const { data: brands } = useBrands()
+//   const { data: brands } = useBrands()
 
   const submit = handleSubmit(async (values) => {
     try {
@@ -83,7 +82,7 @@ export function ProductForm({
     <FormProvider {...form}>
       <form noValidate onSubmit={submit} className="mx-auto flex max-w-2xl flex-col gap-section">
         <section className="flex flex-col gap-4 rounded-card border bg-card p-page shadow-card">
-          <Field label="Product name" htmlFor="name" error={errors.name?.message}>
+          <Field label="Name" htmlFor="name" error={errors.name?.message}>
             <Input
               id="name"
               placeholder="e.g. Coca-Cola Original 50cl"
@@ -93,18 +92,6 @@ export function ProductForm({
             />
           </Field>
 
-          <Field label="Barcode" htmlFor="barcode" error={errors.barcode?.message}>
-            <Input
-              id="barcode"
-              placeholder="Scan or type the barcode"
-              autoComplete="off"
-              autoCapitalize="none"
-              aria-invalid={!!errors.barcode}
-              {...register('barcode')}
-            />
-          </Field>
-
-          <div className="grid gap-4 md:grid-cols-2">
             <Field label="Category" htmlFor="categoryId" error={errors.categoryId?.message}>
               <Controller
                 control={control}
@@ -138,7 +125,6 @@ export function ProductForm({
                 )}
               />
             </Field> */}
-          </div>
 
           {/* <div className="grid gap-4 md:grid-cols-2">
             <Field label="NAFDAC number" htmlFor="nafdacRegNo" optional>

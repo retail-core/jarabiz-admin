@@ -65,7 +65,7 @@ export default function ProductsPage() {
   const [input, setInput] = useState(params.get('q') ?? '')
   const search = useDebouncedValue(input.trim(), 300)
 
-  const { data, isPending, isError, refetch } = useProducts({
+  const { data, isError, refetch } = useProducts({
     search,
     pageIndex: page - 1,
     pageSize: PAGE_SIZE,
@@ -159,9 +159,7 @@ export default function ProductsPage() {
       </div>
 
       <div className="mt-stack">
-        {isPending ? (
-          <ListSkeleton />
-        ) : isError ? (
+        {isError ? (
           <div className="grid min-h-[40dvh] place-items-center text-center">
             <div className="flex flex-col items-center gap-3">
               <p className="text-body text-muted-foreground">Couldn’t load products.</p>
@@ -170,6 +168,8 @@ export default function ProductsPage() {
               </Button>
             </div>
           </div>
+        ) : !data ? (
+          <ListSkeleton />
         ) : data.items.length === 0 ? (
           <EmptyState search={search} onClear={() => onSearch('')} />
         ) : (

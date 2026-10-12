@@ -14,9 +14,9 @@ export function ProductTable({ products }: { products: Product[] }) {
           <thead className="border-b bg-muted/50">
             <tr>
               <th scope="col" className={th}>Product</th>
-              <th scope="col" className={th}>Barcode</th>
               <th scope="col" className={th}>Category</th>
-              <th scope="col" className={th}>Brand</th>
+              <th scope="col" className={th}>Barcode</th>
+              <th scope="col" className={th}>Units</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -38,11 +38,15 @@ export function ProductTable({ products }: { products: Product[] }) {
                     </Link>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{p.barcode}</td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {p.category.map((c) => c.name).join(', ') || '—'}
+                <td className='px-4 py-3 text-muted-foreground'>
+                    {p.category[0].name}
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{p.brand.name}</td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {p.units.find((u) => u.is_base)?.barcode ?? '—'}
+                </td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {p.units.map((u) => (u.is_base ? u.label : `${u.label} ×${u.qty_per_unit}`)).join(', ')}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -5,7 +5,7 @@ import { MORE_ITEM, getMobileTabs, isFullscreenRoute } from '@/shared/config/nav
 import { cn } from '@/shared/lib/utils'
 import { MoreSheet } from './MoreSheet'
 
-const tabClass = 'flex h-full flex-col items-center justify-center gap-1 text-caption font-medium transition-colors'
+const tabClass = 'flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors'
 
 export function BottomNav() {
   const { user } = useAuth()
@@ -21,7 +21,7 @@ export function BottomNav() {
     <>
       <nav
         aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-40 bg-card pb-safe shadow-nav md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 bg-card pb-safe shadow-nav md:hidden rounded-t-[26px]"
       >
         <ul
           className="grid h-nav-bottom"
@@ -41,8 +41,8 @@ export function BottomNav() {
                 }
               >
                 {primary ? (
-                  <span className="-mt-5 grid size-14 place-items-center rounded-button bg-primary text-primary-foreground shadow-pop transition-colors active:bg-primary-hover">
-                    <Icon className="size-6" />
+                  <span className="-mt-8 grid size-12 place-items-center rounded-button bg-primary text-primary-foreground shadow-pop transition-colors active:bg-primary-hover">
+                    <Icon className="size-5" />
                   </span>
                 ) : (
                   <>

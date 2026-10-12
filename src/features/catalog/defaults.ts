@@ -1,16 +1,21 @@
-import { DEFAULT_UNIT, type ProductFormValues } from './schema'
-import type { Product } from './types'
+import { DEFAULT_UNIT, type ProductFormValues } from "./schema";
+import type { Product } from "./types";
+import { isOjaBarcode } from './barcode'
 
 export function getDefaultValues(product?: Product): ProductFormValues {
   return {
-    name: product?.name ?? '',
-    barcode: product?.barcode ?? '',
-    categoryId: product?.category[0]?.id ?? '',
-    brandId: product?.brand.id ?? '',
-    nafdacRegNo: product?.nafdac_regno ?? '',
-    manufacturer: product?.manufacturer ?? '',
+    name: product?.name ?? "",
+    categoryId: product?.category[0]?.id ?? "",
     image: null,
-    // The backend doesn't return units yet, so edit starts from one default base unit.
-    units: [{ ...DEFAULT_UNIT }],
-  }
+    hasBarcode: !product || !isOjaBarcode(product.units.find((u) => u.is_base)?.barcode ?? ''),
+    units: product?.units.length
+      ? product.units.map((u) => ({
+          unitId: u.id,
+          label: u.label,
+          qtyPerUnit: u.qty_per_unit,
+          isBase: u.is_base,
+          barcode: u.barcode ?? "",
+        }))
+      : [{ ...DEFAULT_UNIT }],
+  };
 }

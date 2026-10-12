@@ -1,6 +1,5 @@
-// src/hooks/useCategories.ts
+import { api, getApiError } from '@/shared/lib/api'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/shared/lib/api';
 import { toast } from "sonner";
 
 export interface Category {
@@ -14,7 +13,7 @@ export function useCategories() {
   const query = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      const { data } = await api.get('/product/v1/categories');
+      const { data } = await api.get('/product/v1/categories', { params: { pageSize: 1000 } })
       return data.items as Category[];
     },
   });
@@ -37,7 +36,7 @@ export function useCategories() {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success("Category updated!");
     },
-    onError: () => toast.error("Failed to update category"),
+    onError: (error) => toast.error(getApiError(error).message),
   });
 
   const deleteMutation = useMutation({
@@ -48,8 +47,8 @@ export function useCategories() {
     queryClient.invalidateQueries({ queryKey: ['categories'] });
     toast.success("Category deleted successfully");
   },
-  onError: (error: any) => {
-    toast.error(error.response?.data?.message || "Failed to delete category");
+  onError: (error) => {
+    return toast.error(getApiError(error).message);
   }
 });
 

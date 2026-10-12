@@ -1,5 +1,6 @@
-import { Ellipsis, Layers, Package, Plus, type LucideIcon } from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 import type { Role } from "@/shared/lib/auth";
+import { PackageIcon, PlusIcon, CardsThreeIcon, SquaresFourIcon } from "@phosphor-icons/react";
 
 export interface NavItem {
   id: string;
@@ -26,7 +27,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     id: "products",
     label: "Products",
     href: "/products",
-    icon: Package,
+    icon: PackageIcon,
     group: "Catalog",
     mobileSlot: 1,
   },
@@ -34,7 +35,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     id: "add",
     label: "Add",
     href: "/products/new",
-    icon: Plus,
+    icon: PlusIcon,
     group: "Catalog",
     mobileSlot: 2,
     primary: true,
@@ -43,14 +44,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
     id: "categories",
     label: "Categories",
     href: "/products/categories",
-    icon: Layers,
+    icon: CardsThreeIcon,
     group: "Catalog",
     mobileSlot: 3,
   },
 ];
 
 /** Fourth bottom-nav slot. Opens the More sheet (Settings, theme, logout). */
-export const MORE_ITEM = { id: "more", label: "More", icon: Ellipsis } as const;
+export const MORE_ITEM = { id: "more", label: "More", icon: SquaresFourIcon } as const;
 
 const allowed = (item: NavItem, role: Role) =>
   !item.roles || item.roles.includes(role);

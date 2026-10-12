@@ -6,6 +6,8 @@ import { AuthProvider } from '@/shared/auth/AuthProvider'
 import { Toaster } from '@/shared/components/ui/sonner'
 import { AUTH_LOGOUT_EVENT } from '@/shared/lib/auth'
 import { UpdatePrompt } from '@/shared/components/layout/UpdatePrompt'
+import { useKeyboardInset } from '@/shared/lib/use-keyboard-inset'
+import { IconContext } from '@phosphor-icons/react'
 
 const createQueryClient = () =>
   new QueryClient({
@@ -23,6 +25,7 @@ const createQueryClient = () =>
   })
 
 export function Providers({ children }: { children: ReactNode }) {
+  useKeyboardInset()
   const [queryClient] = useState(createQueryClient)
 
   // Drop cached data on logout so the next user never sees the previous one's.
@@ -33,14 +36,16 @@ export function Providers({ children }: { children: ReactNode }) {
   }, [queryClient])
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          {children}
-          <UpdatePrompt />
-          <Toaster position="top-center" />
-        </AuthProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <IconContext value={{ weight: 'regular' }}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            {children}
+            <UpdatePrompt />
+            <Toaster position="top-center" />
+          </AuthProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </IconContext>
   )
 }

@@ -8,7 +8,7 @@ export function ProductImage({ src, className }: { src?: string | null; classNam
   return (
     <div
       className={cn(
-        'grid shrink-0 place-items-center overflow-hidden rounded-button border bg-card',
+        'grid shrink-0 place-items-center overflow-hidden rounded-lg border bg-card',
         className,
       )}
     >
@@ -21,7 +21,7 @@ export function ProductImage({ src, className }: { src?: string | null; classNam
           loading="lazy"
           decoding="async"
           onError={() => setFailed(true)}
-          className="size-full object-contain p-1"
+          className="size-full object-contain p-0"
         />
       )}
     </div>

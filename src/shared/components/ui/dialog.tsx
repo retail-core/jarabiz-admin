@@ -49,7 +49,7 @@ function DialogContent({
         data-slot="dialog-content"
         aria-describedby={undefined}
         className={cn(
-          'fixed inset-x-0 bottom-0 z-50 grid max-h-[90dvh] w-full gap-stack overflow-y-auto rounded-t-card border-t bg-card p-page pt-6 pb-[max(var(--spacing-page),env(safe-area-inset-bottom))] shadow-pop outline-none duration-200',
+          'fixed inset-x-0 bottom-[var(--keyboard-inset,0px)] z-50 grid max-h-[calc(90dvh-var(--keyboard-inset,0px))] w-full gap-stack transition-[bottom] overflow-y-auto rounded-t-card border-t bg-card p-page pt-6 pb-[max(var(--spacing-page),env(safe-area-inset-bottom))] shadow-pop outline-none duration-200',
           'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-bottom data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-bottom',
           'md:inset-auto md:top-1/2 md:left-1/2 md:max-w-lg md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-card md:border md:p-section',
           'md:data-[state=open]:slide-in-from-bottom-0 md:data-[state=open]:zoom-in-95 md:data-[state=closed]:slide-out-to-bottom-0 md:data-[state=closed]:zoom-out-95',
