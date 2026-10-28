@@ -46,10 +46,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api/product": {
-        target: "http://localhost:80/api/product",
+      '/api': {
+        target: 'http://localhost:80',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/product/, ''),
+        // no rewrite: your backend paths already start with /api
       },
     },
   },

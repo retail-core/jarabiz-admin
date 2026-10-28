@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Product } from '../types'
 import { ProductImage } from './ProductImage'
+import { toTitleCase } from '@/shared/lib/utils'
 
 // const chip = 'rounded-chip bg-muted px-2 py-0.5 text-caption text-muted-foreground'
 
@@ -17,7 +18,7 @@ export function ProductCard({ product }: { product: Product }) {
       <ProductImage src={product.image_url} className="size-12" />
 
       <div className="min-w-0 flex-1">
-        <p className="line-clamp-2 text-body text-xs font-medium">{product.name}</p>
+        <p className="line-clamp-2 text-body text-xs font-medium">{toTitleCase(product.name)}</p>
         <p className="mt-0.5 truncate text-caption text-muted-foreground">
           {base ? `${base.label} · ${base.barcode ?? 'No barcode'}` : '—'}
         </p>

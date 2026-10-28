@@ -63,7 +63,7 @@ export function SearchableSelect({
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command>
-          <CommandInput placeholder={searchPlaceholder} />
+          <CommandInput placeholder={searchPlaceholder} className='text-muted-foreground' />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>

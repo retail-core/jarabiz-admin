@@ -9,6 +9,7 @@ import { useCategories } from '../hooks/useCategories'
 import { getProductSchema, type ProductFormValues } from '../schema'
 import { ImageField } from './ImageField'
 import { UnitsField } from './UnitsField'
+import { toTitleCase } from '@/shared/lib/utils'
 
 interface ProductFormProps {
   mode: 'create' | 'edit'
@@ -59,15 +60,17 @@ export function ProductForm({
     resolver: zodResolver(schema),
     defaultValues,
   })
+
   const {
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors, isDirty },
   } = form
 
   const { data: categories } = useCategories()
-//   const { data: brands } = useBrands()
+  //   const { data: brands } = useBrands()
 
   const submit = handleSubmit(async (values) => {
     try {
@@ -78,62 +81,47 @@ export function ProductForm({
     }
   })
 
+  const nameField = register('name')
+
   return (
     <FormProvider {...form}>
       <form noValidate onSubmit={submit} className="mx-auto flex max-w-2xl flex-col gap-section">
         <section className="flex flex-col gap-4 rounded-card border bg-card p-page shadow-card">
+
           <Field label="Name" htmlFor="name" error={errors.name?.message}>
             <Input
               id="name"
               placeholder="e.g. Coca-Cola Original 50cl"
               autoComplete="off"
               aria-invalid={!!errors.name}
-              {...register('name')}
+              {...nameField}
+              onBlur={(e) => {
+                setValue('name', toTitleCase(e.target.value), {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+                nameField.onBlur(e)
+              }}
             />
           </Field>
 
-            <Field label="Category" htmlFor="categoryId" error={errors.categoryId?.message}>
-              <Controller
-                control={control}
-                name="categoryId"
-                render={({ field }) => (
-                  <SearchableSelect
-                    options={categories}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Select category"
-                    searchPlaceholder="Search categories…"
-                    aria-invalid={!!errors.categoryId}
-                  />
-                )}
-              />
-            </Field>
+          <Field label="Category" htmlFor="categoryId" error={errors.categoryId?.message}>
+            <Controller
+              control={control}
+              name="categoryId"
+              render={({ field }) => (
+                <SearchableSelect
+                  options={categories}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Select category"
+                  searchPlaceholder="Search categories…"
+                  aria-invalid={!!errors.categoryId}
+                />
+              )}
+            />
+          </Field>
 
-            {/* <Field label="Brand" htmlFor="brandId" error={errors.brandId?.message}>
-              <Controller
-                control={control}
-                name="brandId"
-                render={({ field }) => (
-                  <SearchableSelect
-                    options={brands}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Select brand"
-                    searchPlaceholder="Search brands…"
-                    aria-invalid={!!errors.brandId}
-                  />
-                )}
-              />
-            </Field> */}
-
-          {/* <div className="grid gap-4 md:grid-cols-2">
-            <Field label="NAFDAC number" htmlFor="nafdacRegNo" optional>
-              <Input id="nafdacRegNo" autoComplete="off" {...register('nafdacRegNo')} />
-            </Field>
-            <Field label="Manufacturer" htmlFor="manufacturer" optional>
-              <Input id="manufacturer" autoComplete="off" {...register('manufacturer')} />
-            </Field>
-          </div> */}
         </section>
 
         <ImageField existingUrl={existingImageUrl} />
